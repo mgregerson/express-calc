@@ -12,13 +12,11 @@ const MISSING = "Expected key `nums` with comma-separated list of numbers.";
 
 app.use(express.json());
 
-// process traditional form data => req.body
-// app.use(express.urlencoded());
-
 /** Finds mean of nums in qs: returns {operation: "mean", result } */
 
-app.get('/mean/:nums', function (req, res) {
-  const strNums = req.params.nums;
+app.get('/mean', function (req, res) {
+  if (!req.query.nums) throw new BadRequestError(MISSING);
+  const strNums = req.query.nums.split(',');
 
   let nums = convertStrNums(strNums);
   let mean = findMean(nums)
@@ -29,15 +27,10 @@ app.get('/mean/:nums', function (req, res) {
   });
 });
 
-/** Returns 400 Bad Request error if no nums are passed into mean route. */
-app.get('/mean', function (req, res) {
-  throw new BadRequestError(MISSING);
-});
-
 /** Finds median of nums in qs: returns {operation: "median", result } */
-app.get('/median/:nums', function (req, res) {
-  const strNums = req.params.nums;
-  console.log('strNums',strNums);
+app.get('/median', function (req, res) {
+  if (!req.query.nums) throw new BadRequestError(MISSING);
+  const strNums = req.query.nums.split(',');
 
   let nums = convertStrNums(strNums);
   let median = findMedian(nums)
@@ -48,15 +41,10 @@ app.get('/median/:nums', function (req, res) {
   });
 });
 
-/** Returns 400 Bad Request error if no nums are passed into median route. */
-app.get('/median', function (req, res) {
-  throw new BadRequestError(MISSING);
-});
-
-
 /** Finds mode of nums in qs: returns {operation: "mode", result } */
-app.get('/mode/:nums', function (req, res) {
-  const strNums = req.params.nums;
+app.get('/mode', function (req, res) {
+  if (!req.query.nums) throw new BadRequestError(MISSING);
+  const strNums = req.query.nums.split(',');
 
   let nums = convertStrNums(strNums);
   let mode = findMode(nums)
@@ -65,11 +53,6 @@ app.get('/mode/:nums', function (req, res) {
     operation: 'mode',
     value: mode,
   });
-});
-
-/** Returns 400 Bad Request error if no nums are passed into mode route. */
-app.get('/mode', function (req, res) {
-  throw new BadRequestError(MISSING);
 });
 
 
