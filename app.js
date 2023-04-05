@@ -6,6 +6,7 @@ const app = express();
 
 // useful error class to throw
 const { NotFoundError, BadRequestError } = require("./expressError");
+const { convertStrNums } = require("./utils");
 
 const MISSING = "Expected key `nums` with comma-separated list of numbers.";
 
@@ -17,28 +18,59 @@ app.use(express.json());
 /** Finds mean of nums in qs: returns {operation: "mean", result } */
 
 app.get('/mean/:nums', function (req, res) {
+  const strNums = req.params.nums;
 
-  let notNumber = req.params.nums.split(',').filter(num => isNaN(Number(num)))
-  let nums = req.params.nums.split(',').map(Number)
-
+  let nums = convertStrNums(strNums);
   let mean = findMean(nums)
-
-  if (notNumber.length > 0) {
-    throw new BadRequestError(`The following are not numbers: ${notNumber.join(', ')}`)
-  }
 
   return res.json({
     operation: 'mean',
     value: mean,
   });
+});
 
-})
+/** Returns 400 Bad Request error if no nums are passed into mean route. */
+app.get('/mean', function (req, res) {
+  throw new BadRequestError(MISSING);
+});
 
 /** Finds median of nums in qs: returns {operation: "median", result } */
+app.get('/median/:nums', function (req, res) {
+  const strNums = req.params.nums;
+  console.log('strNums',strNums);
+
+  let nums = convertStrNums(strNums);
+  let median = findMedian(nums)
+
+  return res.json({
+    operation: 'median',
+    value: median,
+  });
+});
+
+/** Returns 400 Bad Request error if no nums are passed into median route. */
+app.get('/median', function (req, res) {
+  throw new BadRequestError(MISSING);
+});
 
 
+/** Finds mode of nums in qs: returns {operation: "mode", result } */
+app.get('/mode/:nums', function (req, res) {
+  const strNums = req.params.nums;
 
-/** Finds mode of nums in qs: returns {operation: "mean", result } */
+  let nums = convertStrNums(strNums);
+  let mode = findMode(nums)
+
+  return res.json({
+    operation: 'mode',
+    value: mode,
+  });
+});
+
+/** Returns 400 Bad Request error if no nums are passed into mode route. */
+app.get('/mode', function (req, res) {
+  throw new BadRequestError(MISSING);
+});
 
 
 /** 404 handler: matches unmatched routes; raises NotFoundError. */
